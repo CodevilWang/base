@@ -1,6 +1,6 @@
+#include <stdarg.h>
 #ifndef BASE_UTIL_H
 #define BASE_UTIL_H
-
 
 // A macro to disallow the copy constructor and operator= functions
 // This should be used in the private: declarations for a class
@@ -275,5 +275,7 @@ inline Dest bit_cast(const Source& source) {
 template<typename T>
 inline void ignore_result(const T& ignored) {
 }
+
+#define GG_VA_COPY(a, b) (va_copy(a, b))
 
 #endif  // BASE_UTIL_H

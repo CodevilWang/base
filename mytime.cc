@@ -5,7 +5,9 @@
 #include "mytime.h"
 
 #include <errno.h>
+#include <string.h>
 #include <limits>
+#include "logging.h"
 
 namespace base {
 
@@ -255,7 +257,7 @@ void Time::Explode(bool is_local, Exploded* exploded) const {
 
 // static
 TimeTicks TimeTicks::Now() {
-  uint64_t_t absolute_micro;
+  uint64_t absolute_micro;
 
   struct timespec ts;
   if (clock_gettime(CLOCK_MONOTONIC, &ts) != 0) {

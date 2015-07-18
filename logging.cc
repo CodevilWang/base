@@ -287,11 +287,6 @@ void LogMessage::Init(const char* file, int line) {
     stream_ << std::setfill('0') << std::setw(6) << TickCount() << ':';
   stream_ << log_severity_names[severity_] << ":" << file <<
              "(" << line << ")] ";
-
-  if (FLAGS_enable_addition_info_business_id) {
-    stream_ << *(LogAdditionInfo::GetInstance());
-  }
-
   message_start_ = stream_.tellp();
 }
 
@@ -301,13 +296,13 @@ LogMessage::~LogMessage() {
   if (severity_ < min_log_level)
     return;
 
-  if (severity_ == LOG_FATAL) {
-    // Include a stack trace on a fatal.
-    // TODO(wangmeng12)
-    // StackTrace trace;
-    stream_ << std::endl;  // Newline to separate from log message.
-    trace.OutputToStream(&stream_);
-  }
+  // if (severity_ == LOG_FATAL) {
+  //   // Include a stack trace on a fatal.
+  //   // TODO(wangmeng12)
+  //   // StackTrace trace;
+  //   stream_ << std::endl;  // Newline to separate from log message.
+  //   trace.OutputToStream(&stream_);
+  // }
   stream_ << std::endl;
   std::string str_newline(stream_.str());
 
@@ -417,7 +412,8 @@ ErrnoLogMessage::ErrnoLogMessage(const char* file,
 }
 
 ErrnoLogMessage::~ErrnoLogMessage() {
-  stream() << ": " << safe_strerror(err_);
+  // stream() << ": " << safe_strerror(err_);
+  stream() << ": " << strerror(err_);
 }
 
 void CloseLogFile() {
@@ -426,37 +422,6 @@ void CloseLogFile() {
 
   CloseFile(log_file);
   log_file = NULL;
-}
-
-void RawLog(int level, const char* message) {
-  if (level >= min_log_level) {
-    size_t bytes_written = 0;
-    const size_t message_len = strlen(message);
-    int rv;
-    while (bytes_written < message_len) {
-      rv = HANDLE_EINTR(
-          write(STDERR_FILENO, message + bytes_written,
-                message_len - bytes_written));
-      if (rv < 0) {
-        // Give up, nothing we can do now.
-        break;
-      }
-      bytes_written += rv;
-    }
-
-    if (message_len > 0 && message[message_len - 1] != '\n') {
-      do {
-        rv = HANDLE_EINTR(write(STDERR_FILENO, "\n", 1));
-        if (rv < 0) {
-          // Give up, nothing we can do now.
-          break;
-        }
-      } while (rv != 1);
-    }
-  }
-
-  if (level == LOG_FATAL)
-    DebugUtil::BreakDebugger();
 }
 
 LogAdditionInfo* LogAdditionInfo::GetInstance() {
@@ -491,6 +456,3 @@ void LogAdditionInfo::RemoveBusinessIDByThread() {
 
 }  // namespace logging
 
-std::ostream& operator<<(std::ostream& out, const wchar_t* wstr) {
-  return out << WideToUTF8(std::wstring(wstr));
-}

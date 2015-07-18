@@ -626,17 +626,6 @@ class ErrnoLogMessage {
 //       after this call.
 void CloseLogFile();
 
-// Async signal safe logging mechanism.
-void RawLog(int level, const char* message);
-
-#define RAW_LOG(level, message) logging::RawLog(logging::LOG_ ## level, message)
-
-#define RAW_CHECK(condition)                                                   \
-  do {                                                                         \
-    if (!(condition))                                                          \
-      logging::RawLog(logging::LOG_FATAL, "Check failed: " #condition "\n");   \
-  } while (0)
-
 /*
  * Support output extra info for LOG(...) & VLOG(...)
  */
