@@ -8,6 +8,7 @@
 #include <string.h>
 #include <limits>
 #include "logging.h"
+#include "string_util.h"
 
 namespace base {
 
@@ -104,20 +105,6 @@ Time Time::LocalMidnight() const {
   return FromLocalExploded(exploded);
 }
 
-// static
-bool Time::FromString(const char* time_string, Time* parsed_time) {
-  DCHECK((time_string != NULL) && (parsed_time != NULL));
-  if (strlen(time_string) == 0)
-    return false;
-  PRTime result_time = 0;
-  PRStatus result = PR_ParseTimeString(time_string, PR_FALSE,
-                                       &result_time);
-  if (PR_SUCCESS != result)
-    return false;
-  result_time += kTimeTToMicrosecondsOffset;
-  *parsed_time = Time(result_time);
-  return true;
-}
 
 void Time::ToUTCString(std::string *time_str) const {
   Exploded exploded;

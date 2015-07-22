@@ -277,5 +277,10 @@ inline void ignore_result(const T& ignored) {
 }
 
 #define GG_VA_COPY(a, b) (va_copy(a, b))
+#define GG_LONGLONG(x) x##LL
+#define GG_INT64_C(x) GG_LONGLONG(x) 
+
+#define PRINTF_FORMAT(format_param, dots_param) \
+    __attribute__((format(printf, format_param, dots_param)))
 
 #endif  // BASE_UTIL_H
